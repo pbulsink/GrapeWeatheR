@@ -1,0 +1,11 @@
+Package: GrapeWeatheR
+Title: Analysis of Environment Canada Climate Data for Grape Grower and Agriculture Information
+Version: 0.0.0.9000
+Authors@R: person("Philip", "Bulsink", email = "bulsinkp@gmail.com", role = c("aut", "cre"))
+Description: Calculate agriculture and grape grower weather data for canadian regions using Environment Canada data (collected by the weathercan package). 
+Depends: R (>= 3.1)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: weathercan
+RoxygenNote: 6.0.1
