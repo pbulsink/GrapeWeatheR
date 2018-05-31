@@ -6,8 +6,6 @@
 #'
 #' @return the downloaded weather data.
 #' @export
-#'
-#' @examples
 load_weather_station_data <- function(station_list, ...){
   weather_data<-weathercan::weather_dl(station_list, ...)
   return(weather_data)

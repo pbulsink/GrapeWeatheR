@@ -2,6 +2,7 @@
 #' Calculate Latitude Correction Values for HI and BEDD. HI = 1.02 for 40, 1.06 for 50. Calculated for Apr 01-Sept 31
 #'
 #' @param lat latitude to calculate K
+#' @param ... additional hidden calculation parameters
 #'
 #' @return named list of HI and BEDD K values for the specified latitude
 #' @export
@@ -77,8 +78,6 @@ winkler_index <- function(data){
 #'
 #' @return a named list including the Huglin Index value and binned 'Region'. See Huglin (1978)
 #' @export
-#'
-#' @examples
 huglin_index <- function(data){
   data<-slice_data_to_growing_season(data, months = 4:9)
   k<-lat_correction(data$lat[1])$K_HI
@@ -94,8 +93,6 @@ huglin_index <- function(data){
 #'
 #' @return a named list including the Biologically Effective Degere Days and binned 'Region'. See Gladstones (1992)
 #' @export
-#'
-#' @examples
 bedd <- function(data){
   data<-slice_data_to_growing_season(data)
   k<-lat_correction(data$lat[1])$K_BEDD

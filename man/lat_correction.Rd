@@ -8,6 +8,8 @@ lat_correction(lat, ...)
 }
 \arguments{
 \item{lat}{latitude to calculate K}
+
+\item{...}{additional hidden calculation parameters}
 }
 \value{
 named list of HI and BEDD K values for the specified latitude

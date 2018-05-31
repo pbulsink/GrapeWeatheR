@@ -1,18 +1,12 @@
 Notes on things to calculate:
 
-Growing Degree Days: T(avg)-10 (C) or T(avg) - 50 (F). Total growing degree days = sum from 01 Apr to harvest
-See: https://en.wikipedia.org/wiki/Growing_degree-day
-Also called winkler scale. Can use growing season average temperature (month-month) as proxy for non-daily or hourly locales
+interpolate/calculate data for missing highs/lows/means
 
 Temperature swings (sd high?)
 
 Humidity
 
 Wind exposure
-
-rainfall -  also look at rainfall time. Sept/Oct is hard.
-
-sunlight hours (vs. cloud hours, night hours)
 
 total frosts, last frost, killing frost (< -2), potential ground frost (air temp - 2.5 < 0)
 
