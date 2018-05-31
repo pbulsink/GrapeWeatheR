@@ -2,7 +2,7 @@ Notes on things to calculate:
 
 Growing Degree Days: T(avg)-10 (C) or T(avg) - 50 (F). Total growing degree days = sum from 01 Apr to harvest
 See: https://en.wikipedia.org/wiki/Growing_degree-day
-Also called winkler scale
+Also called winkler scale. Can use growing season average temperature (month-month) as proxy for non-daily or hourly locales
 
 Temperature swings (sd high?)
 
@@ -14,4 +14,35 @@ rainfall -  also look at rainfall time. Sept/Oct is hard.
 
 sunlight hours (vs. cloud hours, night hours)
 
+total frosts, last frost, killing frost (< -2), potential ground frost (air temp - 2.5 < 0)
 
+Temperature indices from Ramos, Jones, Martinez-Casasnovas 2008 (10.3354/cr00759)
+1 GSTavg Average growing season temperature (April to October)
+2 GSTmax Average growing season maximum temperature (April to October)
+3 GSTmin Average growing season minimum temperature (April to October)
+4 NDTmin90p Annual number of days with minimum temperature > 90th percentile
+5 NDTmax90p Annual number of days with maximum temperature > 90th percentile
+6 NDTmin10p Annual number of days with minimum temperature < 10th percentile
+7 NDTmax10p Annual number of days with maximum temperature < 10th percentile
+8 FD Frost occurrence; number of days with minimum temperature < 0 C
+9 FFL Frost-free period length; number of days between dates with temperature < 0 C
+10 ND25 Number of days with Tmax > 25 C
+11 ND30 Number of days with Tmax > 30 C
+12 WI Winkler Index (Winkler et al. 1974) Sum (Tm - 10) for Tm average daily temperature (Apr-Oct)
+13 HI Huglin Index (Huglin 1978) Sum K*(((Tm-10)+ (Tmax-10) )/2) for Tm = average daily , Tmax = max daily, K = length-of-day-coeff. = 1.02 to 1.06 from 40 to 50 oN (Apr-Sept)
+14 BEDD Biologically Effective Degree Days
+15 DTR Daily temperature range during ripening (Tmax – Tmin; August and September)
+
+Precipitation indices
+1 Pannual Total annual precipitation
+2 Pgs Total growing season precipitation (April to October)
+3 Pmax Maximum 1 d precipitation total
+4 Rainfall during
+  P-I Stage I: budbreak to bloom — April 1 to  May 10
+  P-II Stage II: bloom to véraison — May 11 to  June 30
+  P-III Stage III: ripening (veraison to harvest) — July 1 to September 15
+  P-IV Stage IV: post harvest — September 15 to October 31
+  P-V Stage V: dormant period — November 1 to April 1
+5 NP95p Number of days with precipitation > 95th percentile (very wet days)
+6 %P95p Percentage of annual precipitation recorded on very wet days
+7 DPL Maximum annual drought period
