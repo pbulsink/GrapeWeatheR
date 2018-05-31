@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 [![Travis-CI Build Status](https://travis-ci.org/pbulsink/GrapeWeatheR.svg?branch=master)](https://travis-ci.org/pbulsink/GrapeWeatheR)
+[![codecov](https://codecov.io/gh/pbulsink/GrapeWeatheR/branch/master/graph/badge.svg)](https://codecov.io/gh/pbulsink/GrapeWeatheR)
 
 # GrapeWeatheR
 
