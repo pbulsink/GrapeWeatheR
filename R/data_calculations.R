@@ -193,3 +193,40 @@ get_region<-function(calculation="WI", value) {
   }
   return(region)
 }
+
+#' Calculate Annual Temperature Indices
+#'
+#' @description Calculate GST, WI, HI, and BEDD values for each year of data provided, at each individual climate station (separated by ID).
+#'
+#' @param data data frame or tibble as downloaded with \code{\link[weathercan]{weather_dl}}. Multiple stations or years are accepted. Daily data required.
+#'
+#' @return a tibble with climate indicies and region classification for each climate station for each year.
+#' @export
+calculate_annual_indicies <- function(data){
+  #data<-turn_hour_data_to_daily(data)
+  stations<-unique(data$station_id)
+  years<-unique(data$year)
+  results <- tibble::tibble()
+  for(s in stations){
+    for (y in years){
+      d<-data[(data$station_id == s & data$year == y),]
+      g<-gst(d)
+      w<-winkler_index(d)
+      h<-huglin_index(d)
+      b<-bedd(d)
+      r<-tibble::tibble(station_name = d$station_name[1], station_id = s,
+                        climate_id = d$climate_id[1], WMO_id = d$WMO_id[1], TC_id = d$TC_id[1],
+                        elev = d$elev[1], lat = d$lat[1], lon = d$lon[1], year = y,
+                        GSTavg = g$GSTavg, GSTmax = g$GSTmax, GSTmin = g$GSTmin,GST_region = g$GST_region,
+                        WI = w$WI, WI_region = w$WI_region, HI = h$HI, HI_region = h$HI_region,
+                        BEDD = b$BEDD, BEDD_region = b$BEDD_region
+                        )
+      results<-dplyr::bind_rows(results, r)
+    }
+  }
+  return(results)
+}
+
+turn_hour_data_to_daily<-function(data){
+  stations <- unique(data$stations)
+}
