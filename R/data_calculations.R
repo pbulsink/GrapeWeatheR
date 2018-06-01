@@ -121,6 +121,7 @@ bedd <- function(data){
 #' @return The region (from Too Cool to Too Hot)
 #' @export
 get_region<-function(calculation="WI", value) {
+  if(!is.finite(value)) return("")
   region <- ""
   if (calculation == "WI"){
     if(value < 850){1
@@ -203,7 +204,7 @@ get_region<-function(calculation="WI", value) {
 #' @return a tibble with climate indicies and region classification for each climate station for each year.
 #' @export
 calculate_annual_indicies <- function(data){
-  #data<-turn_hour_data_to_daily(data)
+  data<-turn_hour_data_to_daily(data)
   stations<-unique(data$station_id)
   years<-unique(data$year)
   results <- tibble::tibble()
@@ -227,6 +228,34 @@ calculate_annual_indicies <- function(data){
   return(results)
 }
 
+#' Turn hourly data to daily data
+#'
+#' @param data data frame or tibble as downloaded with \code{\link[weathercan]{weather_dl}}. Passes non-hourly data back without modification.
+#'
+#' @return Data turned into daily data, or returned data otherwise.
+#' @export
 turn_hour_data_to_daily<-function(data){
-  stations <- unique(data$stations)
+  #Do nothing if it's not hourly data.
+  if(!'time' %in% colnames(data)) return(data)
+
+  daily<- data %>%
+    dplyr::group_by(station_id, date) %>%
+    dplyr::summarise(
+      station_name=station_name[1],
+      station_operator=station_operator[1],
+      prov=prov[1],
+      lat=lat[1],
+      lon=lon[1],
+      elev=elev[1],
+      climate_id=climate_id[1],
+      WMO_id=WMO_id[1],
+      TC_id=TC_id[1],
+      year=year[1],
+      month=month[1],
+      day=day[1],
+      max_temp = max(temp, na.rm = TRUE),
+      min_temp = min(temp, na.rm = TRUE),
+      mean_temp = mean(temp, na.rm = TRUE)
+      )
+  return(daily)
 }

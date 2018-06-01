@@ -19,17 +19,12 @@ knitr::opts_chunk$set(
 
 # GrapeWeatheR
 
-The goal of GrapeWeatheR is to ...
+The goal of GrapeWeatheR is to provide analysis of Environment Canada Climate Data for grape growers and agriculture purposes.
 
 ## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-## basic example code
-```
 
 ## Citations
 Gladstones, J. 1992. Viticulture and Environment. Winetitles, Adelaide.
 Huglin, P. 1978. Nouveau Mode d'Evaluation des Possibilites Heliothermiques d'un Milieu Viticole. C.R. Acad. Agr. France 64:1117-1126
-Winkler, A.J., J.A. Cook, W.M. Kliewer, and L.A. Lider. 1974. General Viticulture. 4th ed. University of California Press, Berkeley. 
+Winkler, A.J., J.A. Cook, W.M. Kliewer, and L.A. Lider. 1974. General Viticulture. 4th ed. University of California Press, Berkeley.
+ 

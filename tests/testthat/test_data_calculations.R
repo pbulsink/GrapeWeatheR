@@ -32,3 +32,8 @@ test_that("Climate Indexes are properly calculated", {
 
   expect_equal(bedd(sample_data), list("BEDD" = 1926, "BEDD_region" = "Warm"))
 })
+
+test_that("Annual calculations return tibble", {
+  testthat::skip_on_cran()
+  expect_true(tibble::is.tibble(calculate_annual_indicies(weathercan::kamloops_day)))
+})
