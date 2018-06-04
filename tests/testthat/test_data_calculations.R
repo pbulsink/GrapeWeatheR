@@ -60,3 +60,43 @@ test_that("Annual calculations return ok", {
   expect_equal(ai$PP95p, 58)
 
 })
+
+test_that("Hourly to daily calculations return ok", {
+  sample_data<-tibble::tibble(
+    station_id = c(rep(1, 24), rep(2, 24)),
+    date = c(rep(as.Date("2018-01-01"), 24*2)),
+    station_name = station_id,
+    station_operator = "",
+    prov = "ON",
+    lat = 45,
+    lon = -75,
+    elev = 100,
+    climate_id = station_id,
+    WMO_id = station_id,
+    TC_id = station_id,
+    year = 2018,
+    month = 1,
+    day = 1,
+    time = c(rep(seq.POSIXt(from = as.POSIXct("2018-01-01 0:00:00"), by='hour', length.out = 24), 2)),
+    temp = c(rep(c(8, rep(10, 22), 12), 2))
+  )
+
+  result<- tibble::tibble(station_id = c(1,2),
+                          date = rep(as.Date("2018-01-01"),2),
+                          station_name = c(1, 2),
+                          prov = c("ON", "ON"),
+                          lat = c(45, 45),
+                          lon = c(-75, -75),
+                          elev = c(100, 100),
+                          climate_id = c(1, 2),
+                          WMO_id = c(1, 2),
+                          TC_id = c(1, 2),
+                          year = c(2018, 2018),
+                          month = c(1, 1),
+                          day = c(1, 1),
+                          max_temp = c(12, 12),
+                          min_temp = c(8, 8),
+                          mean_temp = c(10, 10))
+  expect_equivalent(turn_hour_data_to_daily(sample_data), result)
+
+})

@@ -42,7 +42,6 @@ turn_hour_data_to_daily<-function(data){
     dplyr::group_by(station_id, date) %>%
     dplyr::summarise(
       station_name=station_name[1],
-      station_operator=station_operator[1],
       prov=prov[1],
       lat=lat[1],
       lon=lon[1],
@@ -56,7 +55,8 @@ turn_hour_data_to_daily<-function(data){
       max_temp = max(temp, na.rm = TRUE),
       min_temp = min(temp, na.rm = TRUE),
       mean_temp = mean(temp, na.rm = TRUE)
-    )
+    ) %>%
+    dplyr::ungroup()
   return(daily)
 }
 
