@@ -30,7 +30,7 @@ test_that("Climate Indexes are properly calculated", {
 })
 
 test_that("Annual calculations return ok", {
-  ai<-calculate_annual_indicies(weathercan::kamloops_day)
+  ai<-calculate_annual_indicies(weathercan::kamloops_day)  # kamloops_day is not a full year
   expect_true(tibble::is.tibble(ai))
 
   expect_equal(ai$GSTavg, 15.9527, tolerance = 0.0001)
@@ -40,7 +40,8 @@ test_that("Annual calculations return ok", {
   expect_equal(ai$HI, 941, tolerance = 0.0001)
   expect_equal(ai$BEDD, 670.9032, tolerance = 0.0001)
   expect_equal(ai$FFD, 11)
-  expect_equal(ai$FD, 55)
+  expect_equal(ai$F_Annual, 55)
+  expect_equal(ai$F_Growing, 55)
   expect_equal(ai$ND_25, 34)
   expect_equal(ai$ND_30, 12)
   expect_equal(ai$NDT_Min_90p, 19)

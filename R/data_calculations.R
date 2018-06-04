@@ -141,7 +141,7 @@ bedd <- function(data){
 frost<-function(data){
   data<-slice_data_to_growing_season(data, 1:12)
 
-  fd<-nrow(data[data$min_temp <= 0, ])
+  f_annual<-nrow(data[data$min_temp <= 0, ])
   since_frost<-0
   largest_no_frost<-0
   for(i in unique(data$date)){
@@ -156,7 +156,10 @@ frost<-function(data){
       }
     }
   }
-  return(list(FFD=largest_no_frost, FD=fd))
+
+  d<-slice_data_to_growing_season(data, 4:10)
+  f_growing<-nrow(data[data$min_temp <= 0, ])
+  return(list(FFD=largest_no_frost, F_Annual=f_annual, F_Growing=f_growing))
 }
 
 #' Number of days related to temperature (percentile, temperature)
@@ -354,9 +357,10 @@ calculate_annual_indicies <- function(data){
       r<-tibble::tibble(station_name = d$station_name[1], station_id = s,
                         climate_id = d$climate_id[1], WMO_id = d$WMO_id[1], TC_id = d$TC_id[1],
                         elev = d$elev[1], lat = d$lat[1], lon = d$lon[1], year = y,
-                        GSTavg = g$GSTavg, GSTmax = g$GSTmax, GSTmin = g$GSTmin,GST_region = g$GST_region,
-                        WI = w$WI, WI_region = w$WI_region, HI = h$HI, HI_region = h$HI_region,
-                        BEDD = b$BEDD, BEDD_region = b$BEDD_region, FFD = f$FFD, FD = f$FD,
+                        GSTavg = g$GSTavg, GSTmax = g$GSTmax, GSTmin = g$GSTmin,
+                        GST_region = g$GST_region, WI = w$WI, WI_region = w$WI_region, HI = h$HI,
+                        HI_region = h$HI_region, BEDD = b$BEDD, BEDD_region = b$BEDD_region,
+                        FFD = f$FFD, F_Growing = f$F_Growing, F_Annual = f$F_Annual,
                         ND_25 = n$ND_25, ND_30 = n$ND_30, NDT_Min_90p = n$NDT_Min_90p,
                         NDT_Max_90p = n$NDT_Max_90p, NDT_Min_10p = n$NDT_Min_10p,
                         NDT_Max_10p = n$NDT_Max_10p, DTR = n$DTR, P_Annual = p$P_Annual,
