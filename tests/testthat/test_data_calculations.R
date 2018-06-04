@@ -21,10 +21,6 @@ test_that("Climate Indexes are properly calculated", {
   sample_data$day = as.integer(format(sample_data$date, "%d"))
 
   expect_equal(gst(sample_data), list("GSTavg" = 20, "GSTmax" = 25, "GSTmin" = 15, "GST_region" = "Hot"))
-  # expect_equal(gst(sample_data)$GSTavg, 20)
-  # expect_equal(gst(sample_data)$GSTmax, 25)
-  # expect_equal(gst(sample_data)$GSTmin, 15)
-  # expect_equal(gst(sample_data)$GST_region, "Hot")
 
   expect_equal(winkler_index(sample_data), list("WI" = 2140, "WI_region" = "Region IV"))
 
@@ -33,7 +29,23 @@ test_that("Climate Indexes are properly calculated", {
   expect_equal(bedd(sample_data), list("BEDD" = 1926, "BEDD_region" = "Warm"))
 })
 
-test_that("Annual calculations return tibble", {
-  testthat::skip_on_cran()
-  expect_true(tibble::is.tibble(calculate_annual_indicies(weathercan::kamloops_day)))
+test_that("Annual calculations return ok", {
+  ai<-calculate_annual_indicies(weathercan::kamloops_day)
+  expect_true(tibble::is.tibble(ai))
+
+  expect_equal(ai$GSTavg, 15.9527, tolerance = 0.0001)
+  expect_equal(ai$GSTmax, 23.4936, tolerance = 0.0001)
+  expect_equal(ai$GSTmin, 8.3582, tolerance = 0.0001)
+  expect_equal(ai$WI, 544.6, tolerance = 0.0001)
+  expect_equal(ai$HI, 941, tolerance = 0.0001)
+  expect_equal(ai$BEDD, 670.9032, tolerance = 0.0001)
+  expect_equal(ai$FFD, 11)
+  expect_equal(ai$FD, 55)
+  expect_equal(ai$ND_25, 34)
+  expect_equal(ai$ND_30, 12)
+  expect_equal(ai$NDT_Min_90p, 19)
+  expect_equal(ai$NDT_Max_90p, 18)
+  expect_equal(ai$NDT_Min_10p, 19)
+  expect_equal(ai$NDT_Max_10p, 19)
+
 })

@@ -7,9 +7,10 @@ Depends: R (>= 3.2)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
   weathercan,
-  dplyr
+  dplyr,
+    stats
 RoxygenNote: 6.0.1
 Suggests:
   testthat,

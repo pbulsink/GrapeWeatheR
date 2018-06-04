@@ -11,5 +11,6 @@ Analysis of Environment Canada Climate Data for Grape Grower and Agriculture Inf
 \references{
 Gladstones, J. 1992. Viticulture and Environment. Winetitles, Adelaide.
 Huglin, P. 1978. Nouveau Mode d'Evaluation des Possibilites Heliothermiques d'un Milieu Viticole. C.R. Acad. Agr. France 64:1117-1126
+Ramos, M.C., Jones, G.V., Martinez-Casasnovas, J.A. 2008. Clim Res 38:1-15
 Winkler, A.J., J.A. Cook, W.M. Kliewer, and L.A. Lider. 1974. General Viticulture. 4th ed. University of California Press, Berkeley.
 }
