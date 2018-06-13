@@ -9,7 +9,7 @@ test_that("Climate constants properly calculated", {
 })
 
 test_that("Climate Indexes are properly calculated", {
-  sample_data<-tibble::tibble(
+  sample_data<-dplyr::tibble(
     date = seq.Date(as.Date("2017-01-01"), as.Date("2017-12-31"), by=1),
     max_temp = 25,
     min_temp = 15,
@@ -31,7 +31,7 @@ test_that("Climate Indexes are properly calculated", {
 
 test_that("Annual calculations return ok", {
   ai<-calculate_annual_indicies(weathercan::kamloops_day)  # kamloops_day is not a full year
-  expect_true(tibble::is.tibble(ai))
+  expect_true("tbl_df" %in% class(ai))
 
   expect_equal(ai$GSTavg, 15.9527, tolerance = 0.0001)
   expect_equal(ai$GSTmax, 23.4936, tolerance = 0.0001)
@@ -63,7 +63,7 @@ test_that("Annual calculations return ok", {
 })
 
 test_that("Hourly to daily calculations return ok", {
-  sample_data<-tibble::tibble(
+  sample_data<-dplyr::tibble(
     station_id = c(rep(1, 24), rep(2, 24)),
     date = c(rep(as.Date("2018-01-01"), 24*2)),
     station_name = station_id,
@@ -82,7 +82,7 @@ test_that("Hourly to daily calculations return ok", {
     temp = c(rep(c(8, rep(10, 22), 12), 2))
   )
 
-  result<- tibble::tibble(station_id = c(1,2),
+  result<- dplyr::tibble(station_id = c(1,2),
                           date = rep(as.Date("2018-01-01"),2),
                           station_name = c(1, 2),
                           prov = c("ON", "ON"),

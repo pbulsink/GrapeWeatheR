@@ -342,7 +342,7 @@ calculate_annual_indicies <- function(data){
   data$day<-as.integer(data$day)
   stations<-unique(data$station_id)
   years<-unique(data$year)
-  results <- tibble::tibble()
+  results <- dplyr::tibble()
   for(s in stations){
     for (y in years){
       d<-data[(data$station_id == s & data$year == y),]
@@ -354,7 +354,7 @@ calculate_annual_indicies <- function(data){
       f<-frost(d)
       p<-precip(d)
 
-      r<-tibble::tibble(station_name = d$station_name[1], station_id = s,
+      r<-dplyr::tibble(station_name = d$station_name[1], station_id = s,
                         climate_id = d$climate_id[1], WMO_id = d$WMO_id[1], TC_id = d$TC_id[1],
                         elev = d$elev[1], lat = d$lat[1], lon = d$lon[1], year = y,
                         GSTavg = g$GSTavg, GSTmax = g$GSTmax, GSTmin = g$GSTmin,
