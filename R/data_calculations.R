@@ -67,14 +67,17 @@ turn_hour_data_to_daily<-function(data){
 #' @return named list of GST average temperature, GST max temperature and GST min temperature, plus GST binned 'Region'
 #' @export
 gst <- function(data){
-  data<-slice_data_to_growing_season(data)
+  data<-slice_data_to_growing_season(data, 4:10)
+  if(nrow(data) == 0){
+    return(list(GSTavg = NA, GSTmax = NA, GSTmin = NA, GST_region = NA))
+  }
 
   gst_avg<-mean(data$mean_temp, na.rm = TRUE)
   gst_max<-mean(data$max_temp, na.rm = TRUE)
   gst_min<-mean(data$min_temp, na.rm = TRUE)
 
   region <- get_region_classification("GST", gst_avg)
-  return(list("GSTavg" = gst_avg, "GSTmax" = gst_max, "GSTmin" = gst_min, "GST_region" = region))
+  return(list(GSTavg = gst_avg, GSTmax = gst_max, GSTmin = gst_min, GST_region = region))
 }
 
 #' Calculate Winkler Index (Growing Degree Days) (WI/GDD)
@@ -84,7 +87,10 @@ gst <- function(data){
 #' @return a named list including the Winkler Index value and binned 'Region'. See Winkler et. al. (1974)
 #' @export
 winkler_index <- function(data){
-  data<-slice_data_to_growing_season(data)
+  data<-slice_data_to_growing_season(data, 4:10)
+  if(nrow(data) == 0){
+    return(list(WI = NA, WI_region = NA))
+  }
 
   wi<-sum(pmax(data$mean_temp-10, ((data$max_temp+data$min_temp)/2)-10, 0, na.rm=TRUE))
   region <- get_region_classification("WI", wi)
@@ -99,6 +105,9 @@ winkler_index <- function(data){
 #' @export
 huglin_index <- function(data){
   data<-slice_data_to_growing_season(data, months = 4:9)
+  if(nrow(data) == 0){
+    return(list(HI = NA, HI_region = NA))
+  }
   k<-lat_correction(data$lat[1])$K_HI
 
   hi <- sum(pmax(((data$mean_temp-10)+(data$max_temp-10))/2, 0, na.rm=TRUE)*k)
@@ -113,7 +122,10 @@ huglin_index <- function(data){
 #' @return a named list including the Biologically Effective Degere Days and binned 'Region'. See Gladstones (1992)
 #' @export
 bedd <- function(data){
-  data<-slice_data_to_growing_season(data)
+  data<-slice_data_to_growing_season(data, 4:10)
+  if(nrow(data) == 0){
+    return(list(BEDD = NA, BEDD_region = NA))
+  }
   k<-lat_correction(data$lat[1])$K_BEDD
 
   tradj<-ifelse(
@@ -140,12 +152,23 @@ bedd <- function(data){
 #' @export
 frost<-function(data){
   data<-slice_data_to_growing_season(data, 1:12)
+  if(nrow(data) == 0){
+    return(list(FFD=NA, F_Annual=NA, F_Growing=NA))
+  }
 
   f_annual<-nrow(data[data$min_temp <= 0, ])
   since_frost<-0
   largest_no_frost<-0
-  for(i in unique(data$date)){
-    if(data[data$date == i, ]$min_temp > 0){
+  for(i in 1:nrow(data)){
+    if(is.na(data[i, ]$min_temp)){
+      #assume average from 2 days before & 2 days after as min temp. If <0, one of days before or after will be 0 as well and will handle resetting case. Most impact to historical data
+      r<-c((i-2):(i+2))
+      r<-r[0 < r & r < nrow(data)]
+      m<-mean(data$min_temp[r], na.rm = TRUE)
+      if(is.finite(m) & m > 0)
+        since_frost<-since_frost + 1
+    }
+    else if(data[i, ]$min_temp > 0){
       since_frost<-since_frost + 1
     } else {
       if(since_frost != 0){
@@ -177,6 +200,10 @@ frost<-function(data){
 #' @export
 nd_temp <- function(data){
   data <- slice_data_to_growing_season(data, 1:12)
+  if(nrow(data) == 0){
+    return(list(ND_25 = NA, ND_30 = NA, NDT_Min_90p = NA,
+                NDT_Max_90p = NA, NDT_Min_10p = NA, NDT_Max_10p = NA, DTR=NA))
+  }
 
   nd25 <- nrow(data[data$max_temp >= 25, ])
   nd30 <- nrow(data[data$max_temp >= 30, ])
@@ -201,6 +228,11 @@ nd_temp <- function(data){
 #' @export
 precip<-function(data){
   data <- slice_data_to_growing_season(data, 1:12)
+  if(nrow(data) == 0){
+    return(list(P_Annual = NA, P_Growing = NA, P_Max = NA, NP95p = NA,
+                PP95p = NA, P_I = NA, P_II = NA, P_III = NA, P_IV = NA,
+                P_V = NA, DPL = NA))
+  }
 
   p_annual <- sum(data$total_precip, na.rm = TRUE)
   p_max <- max(data$total_precip, na.rm = TRUE)
