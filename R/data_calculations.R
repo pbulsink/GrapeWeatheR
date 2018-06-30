@@ -288,7 +288,7 @@ get_region_classification<-function(calculation="WI", value) {
   if(!is.finite(value)) return("")
   region <- ""
   if (calculation == "WI"){
-    if(value < 850){1
+    if(value < 850){
       region <- "Too Cool"
     } else if (value < 1390){
       region <- "Region I"

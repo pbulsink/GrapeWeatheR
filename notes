@@ -40,3 +40,6 @@ Precipitation indices
 5. NP95p Number of days with precipitation > 95th percentile (very wet days)
 6. %P95p Percentage of annual precipitation recorded on very wet days
 7. DPL Maximum annual drought period
+
+
+REFACTOR INDEX CALCS to daily, as subfunction to annual calls.
