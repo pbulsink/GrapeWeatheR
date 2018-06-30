@@ -34,7 +34,7 @@ plot_index_history<-function(data, index='Winkler'){
     stop('Index must be one of Winkler, Huglin, BEDD, or GST')
   }
   id<-list('Winkler' = 'WI', 'Huglin' = 'HI', 'BEDD' = 'BEDD', 'GST'= 'GSTavg')
-  id<-id[index]
+  id<-id[[index]]
   if(id == 'WI'){
     limits <- c(850, 1390, 1668, 1945, 2223, 2701)
     limits_text <- c("Too cool", "Region I", "Region II", "Region III", "Region IV", "Region V", "Too Hot")

@@ -12,6 +12,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "README-"
 )
+library(GrapeWeatheR)
 ```
 
 [![Travis-CI Build Status](https://travis-ci.org/pbulsink/GrapeWeatheR.svg?branch=master)](https://travis-ci.org/pbulsink/GrapeWeatheR)
@@ -43,7 +44,7 @@ We can see that the past few years of BEDD indicies have shown the Pelee region 
 ### Plotting
 We can plot results as well. 
 ```{r plot_annual_indices}
-plot_index_history(pelee_data, index = 'BEDD')
+plot_index_history(pelee_data, index = 'GST')
 ```
 
 
