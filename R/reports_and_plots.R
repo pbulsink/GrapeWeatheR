@@ -62,8 +62,8 @@ plot_index_history<-function(data, index='Winkler'){
     ggplot2::xlab('Year') +
     ggplot2::ylab(paste0(index, ' Value')) +
     #ggplot2::theme_bw() +
-    ggplot2::theme(plot.margin = ggplot2::margin(10,80,10,10, unit = 'pt'))
-  max_year<-ceiling(max(ggplot_build(p)$layout$panel_ranges[[1]]$x.range))
+    ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'))
+  max_year<-ceiling(max(ggplot2::ggplot_build(p)$layout$panel_ranges[[1]]$x.range))
   for(i in 1:length(limits)){
     p <- p +
       ggplot2::geom_hline(yintercept = limits[[i]]) +

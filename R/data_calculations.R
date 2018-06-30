@@ -235,7 +235,7 @@ precip<-function(data){
   }
 
   p_annual <- sum(data$total_precip, na.rm = TRUE)
-  p_max <- max(data$total_precip, na.rm = TRUE)
+  p_max <- max(c(data$total_precip, 0), na.rm = TRUE)
   np95p <- nrow(data[data$total_precip > stats::quantile(data$total_precip, 0.95, na.rm = TRUE),])
   pp95p <- sum(data[data$total_precip > stats::quantile(data$total_precip, 0.95, na.rm = TRUE),]$total_precip,
                na.rm = TRUE)
