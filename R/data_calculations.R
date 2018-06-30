@@ -80,6 +80,14 @@ gst <- function(data){
   return(list(GSTavg = gst_avg, GSTmax = gst_max, GSTmin = gst_min, GST_region = region))
 }
 
+winkler_day <- function(data){
+  if(nrow(data) == 0){
+    return(NA)
+  }
+  daydata<-pmax(data$mean_temp-10, ((data$max_temp+data$min_temp)/2)-10, 0, na.rm = TRUE)
+  return(daydata)
+}
+
 #' Calculate Winkler Index (Growing Degree Days) (WI/GDD)
 #'
 #' @param data data frame or tibble as downloaded with \code{\link[weathercan]{weather_dl}}. Provide a single measurement site for a single year only.
@@ -88,13 +96,25 @@ gst <- function(data){
 #' @export
 winkler_index <- function(data){
   data<-slice_data_to_growing_season(data, 4:10)
-  if(nrow(data) == 0){
-    return(list(WI = NA, WI_region = NA))
+  daydata<-winkler_day(data)
+  if(length(daydata) == 1){
+    if(is.na(daydata)){
+      return(list(WI = NA, WI_region = NA))
+    }
   }
 
-  wi<-sum(pmax(data$mean_temp-10, ((data$max_temp+data$min_temp)/2)-10, 0, na.rm=TRUE))
+  wi<-sum(daydata, na.rm = TRUE)
   region <- get_region_classification("WI", wi)
   return(list(WI=wi, WI_region=region))
+}
+
+huglin_day<-function(data){
+  if(nrow(data) == 0){
+    return(NA)
+  }
+  k<-lat_correction(data$lat[1])$K_HI
+  daydata <- pmax(((data$mean_temp-10)+(data$max_temp-10))/2, 0, na.rm=TRUE)*k
+  return(daydata)
 }
 
 #' Calculate Huglin Index (HI)
@@ -105,27 +125,23 @@ winkler_index <- function(data){
 #' @export
 huglin_index <- function(data){
   data<-slice_data_to_growing_season(data, months = 4:9)
-  if(nrow(data) == 0){
-    return(list(HI = NA, HI_region = NA))
+  daydata <- huglin_day(data)
+  if(length(daydata) == 1){
+    if(is.na(daydata)){
+      return(list(HI = NA, HI_region = NA))
+    }
   }
-  k<-lat_correction(data$lat[1])$K_HI
 
-  hi <- sum(pmax(((data$mean_temp-10)+(data$max_temp-10))/2, 0, na.rm=TRUE)*k)
+  hi <- sum(daydata, na.rm = TRUE)
   region <- get_region_classification("HI", hi)
   return(list(HI=hi, HI_region=region))
 }
 
-#' Calculate Biologically Effective Growing Days value (BEDD)
-#'
-#' @param data data frame or tibble as downloaded with \code{\link[weathercan]{weather_dl}}. Provide a single measurement site for a single year only.
-#'
-#' @return a named list including the Biologically Effective Degere Days and binned 'Region'. See Gladstones (1992)
-#' @export
-bedd <- function(data){
-  data<-slice_data_to_growing_season(data, 4:10)
+bedd_day<- function(data){
   if(nrow(data) == 0){
-    return(list(BEDD = NA, BEDD_region = NA))
+    return(NA)
   }
+
   k<-lat_correction(data$lat[1])$K_BEDD
 
   tradj<-ifelse(
@@ -138,7 +154,26 @@ bedd <- function(data){
   tradj[is.na(tradj)] <- 0
   data$tradj<-tradj
 
-  bedd <- sum(pmin(pmax(data$mean_temp-10, ((data$max_temp+data$min_temp)/2)-10, 0)*k + data$tradj, 9, na.rm=TRUE))
+  daydata <- pmin(pmax(data$mean_temp-10, ((data$max_temp+data$min_temp)/2)-10, 0)*k + data$tradj, 9, na.rm=TRUE)
+  return(daydata)
+}
+
+#' Calculate Biologically Effective Growing Days value (BEDD)
+#'
+#' @param data data frame or tibble as downloaded with \code{\link[weathercan]{weather_dl}}. Provide a single measurement site for a single year only.
+#'
+#' @return a named list including the Biologically Effective Degere Days and binned 'Region'. See Gladstones (1992)
+#' @export
+bedd <- function(data){
+  data<-slice_data_to_growing_season(data, 4:10)
+  daydata<-bedd_day(data)
+  if(length(daydata) == 1){
+    if(is.na(daydata)){
+      return(list(BEDD = NA, BEDD_region = NA))
+    }
+  }
+
+  bedd <- sum(daydata)
 
   region <- get_region_classification("BEDD", bedd)
   return(list(BEDD = bedd, BEDD_region = region))
