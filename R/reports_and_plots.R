@@ -82,16 +82,29 @@ plot_index_history<-function(data, index='Winkler'){
 
 }
 
-#' Plot index accumilation
+#' Plot index progress
 #'
-#' @param data Raw hourly or daily data returned from weathercan
+#' @param data Raw daily data returned from weathercan
 #' @param index The index of which to plot accumilation (one of 'Winkler', 'Huglin', or 'BEDD')
 #' @param year year to plot, optional (or leave NULL for all)
 #'
 #' @return an annual accumilation plot of the specified index
 #' @export
-plot_index_accumilation<-function(data, index='Winkler', year=NULL){
-  stopifnot(index %in% c('Winkler', 'Huglin', 'BEDD'))
+plot_index_progress<-function(data, index='Winkler', year=NULL){
+
+  if (!index %in% c('Winkler', 'Huglin', 'BEDD')){
+    stop('Index must be one of Winkler, Huglin, or BEDD')
+  }
+  if(index == 'Winkler'){
+    limits <- c(850, 1390, 1668, 1945, 2223, 2701)
+    limits_text <- c("Too cool", "Region I", "Region II", "Region III", "Region IV", "Region V", "Too Hot")
+  } else if (index == 'Huglin'){
+    limits <- c(1200, 1500, 1800, 2100, 2400, 2700, 3000)
+    limits_text <- c("Too cool", "Very Cool", "Cool", "Temperate", "Warm Temperate", "Warm", "Very Warm", "Too Hot")
+  } else {
+    limits <- c(1000, 1200, 1400, 1600, 1800, 2000, 2200)
+    limits_text <- c("Too cool", "Very Cool", "Cool", "Temperate", "Warm Temperate", "Warm", "Very Warm", "Too Hot")
+  }
 
   if(!is.null(year)){
     yearrange<-unique(data$year)
@@ -100,4 +113,53 @@ plot_index_accumilation<-function(data, index='Winkler', year=NULL){
   } else {
     year<-unique(data$year)
   }
+
+  data<-data[data$year %in% year, ]
+  data$jd<-as.numeric(strftime(data$date, format = "%j"))-1
+  data$refdate<-as.Date(data$jd, format = '%j', origin = as.Date("2017-01-01"))
+
+  #Winkler & Huglin use subset of months.
+  if(index == 'Winkler'){
+    data$month<-as.numeric(data$month)
+    data<-data[data$month %in% c(4:10), ]
+    data$index<-GrapeWeatheR:::winkler_day(data)
+  } else if (index == 'Huglin'){
+    data$month<-as.numeric(data$month)
+    data<-data[data$month %in% c(4:9), ]
+    data$index<-GrapeWeatheR:::huglin_day(data)
+  } else {
+    data$index<-GrapeWeatheR:::bedd_day(data)
+  }
+
+  data$cumulate <- 0
+
+  for (y in year){
+    data[data$year == y, 'cumulate']<-cumsum(data[data$year==y, 'index'])
+  }
+
+  p<-ggplot2::ggplot(data=data,
+                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate), colour = quote(year))) +
+    ggplot2::geom_line() +
+    ggplot2::ggtitle(paste0('Cumulative ', index, ' Progress Plot')) +
+    ggplot2::xlab('Date') +
+    ggplot2::ylab(paste0(index, ' Value')) +
+    ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'),
+                   legend.position = 'top')
+  max_date<-ceiling(max(ggplot2::ggplot_build(p)$layout$panel_ranges[[1]]$x.range))
+  for(i in 1:length(limits)){
+    p <- p +
+      ggplot2::geom_hline(yintercept = limits[[i]]) +
+      ggplot2::annotation_custom(grob = grid::textGrob(limits_text[[i]],
+                                                       hjust = 0),
+                                 xmin = max_date+1,
+                                 xmax = max_date+1,
+                                 ymin = limits[[i]],
+                                 ymax = limits[[i]])
+  }
+
+  gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
+  gt$layout$clip[gt$layout$name == "panel"] <- "off"
+
+  grid::grid.draw(gt)
+
 }
