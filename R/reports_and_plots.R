@@ -1,11 +1,58 @@
+rolling <- function(v, n){
+  half_window<-floor(n/2)
+
+  results<-rep(0, length(v))
+
+  for (i in 1:half_window){
+    results[i] <- mean(v[1:i], na.rm = TRUE)
+  }
+
+  for (i in half_window:(length(v)-half_window)){
+    results[i] <- mean(v[(i-half_window):(i+half_window)], na.rm = TRUE)
+  }
+
+  for (i in (length(v)-half_window):length(v)){
+    results[i] <- mean(v[(i-half_window):(i+half_window)], na.rm = TRUE)
+  }
+
+  results(is.nan(results)) <- NA
+  return(results)
+  #return(as.numeric(filter(v,rep(1/n,n), sides=2))) #Doesn't handle NA
+}
+
 #' Plot Annual Temperature History
 #'
 #' @param data Data frame from which to plot.
+#' @param average_n The number of items to include in a rolling average
+#' @param interval One of 'day', 'week', 'month'
+#' @param what One of 'max', 'mean', 'min'
 #'
-#' @return a ggplot object
+#' @return a plot
 #' @export
-plot_temp_history<-function(data){
+plot_temp_history<-function(data, average_n=1, interval='day', what = 'max'){
+  if (!(interval %in% c('day', 'week', 'month'))){
+    stop("Interval must be one of 'day', 'week', or 'month'.")
+  }
+  if (!(what %in% c('max','min','mean'))){
+    stop("What must be one of 'max', 'min', 'mean'.")
+  }
 
+  if (average_n%%2 == 0){
+    message('Even numbered rolling window is not possible. Using ', average_n, '+1.')
+    average_n <- average_n + 1
+  }
+
+  data$week <- strftime(data$date, format='%V')
+  if(interval == 'week'){
+    NA
+  } else if (interval == 'month'){
+    NA #dplyr::group_by(year, month)
+  }
+
+  data$rolling <- rolling(data[,paste0(what,'_temp')], average_n)
+
+  p <- ggplot2::ggplot(data = data,
+                       aes_(x=quote(date), y = rolling))
 }
 
 
