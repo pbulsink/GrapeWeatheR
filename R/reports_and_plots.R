@@ -1,4 +1,8 @@
 rolling <- function(v, n){
+  if(n %% 2 == 0){
+    message("Odd rolling window required. Using n=", n, "+1.")
+  }
+
   half_window<-floor(n/2)
 
   results<-rep(0, length(v))
@@ -15,7 +19,7 @@ rolling <- function(v, n){
     results[i] <- mean(v[(i-half_window):(i+half_window)], na.rm = TRUE)
   }
 
-  results(is.nan(results)) <- NA
+  results[is.nan(results)] <- NA
   return(results)
   #return(as.numeric(filter(v,rep(1/n,n), sides=2))) #Doesn't handle NA
 }

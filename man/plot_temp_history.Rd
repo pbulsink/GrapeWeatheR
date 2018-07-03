@@ -4,13 +4,19 @@
 \alias{plot_temp_history}
 \title{Plot Annual Temperature History}
 \usage{
-plot_temp_history(data)
+plot_temp_history(data, average_n = 1, interval = "day", what = "max")
 }
 \arguments{
 \item{data}{Data frame from which to plot.}
+
+\item{average_n}{The number of items to include in a rolling average}
+
+\item{interval}{One of 'day', 'week', 'month'}
+
+\item{what}{One of 'max', 'mean', 'min'}
 }
 \value{
-a ggplot object
+a plot
 }
 \description{
 Plot Annual Temperature History
