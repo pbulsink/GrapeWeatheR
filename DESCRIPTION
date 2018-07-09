@@ -12,7 +12,8 @@ Imports:
   dplyr,
   stats,
     ggplot2,
-    grid
+    grid,
+    gghighlight
 RoxygenNote: 6.0.1
 Suggests:
   testthat

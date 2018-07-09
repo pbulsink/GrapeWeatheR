@@ -48,9 +48,18 @@ plot_temp_history<-function(data, average_n=1, interval='day', what = 'max'){
 
   data$week <- strftime(data$date, format='%V')
   if(interval == 'week'){
-    NA
+    data %>%
+      dplyr::group_by(year, week) %>%
+      dplyr::summarise(max_temp = mean(max_temp),
+                       min_temp = mean(min_temp),
+                       mean_teamp = mean(mean_temp))
+
   } else if (interval == 'month'){
-    NA #dplyr::group_by(year, month)
+    data %>%
+      dplyr::group_by(year, month) %>%
+      dplyr::summarise(max_temp = mean(max_temp),
+                       min_temp = mean(min_temp),
+                       mean_teamp = mean(mean_temp))
   }
 
   data$rolling <- rolling(data[,paste0(what,'_temp')], average_n)
@@ -189,8 +198,9 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
   }
 
   p<-ggplot2::ggplot(data=data,
-                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate), colour = quote(year))) +
+                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate))) +
     ggplot2::geom_line() +
+    gghighlight::gghighlight(max(year), max_highlight = 1L, use_direct_label = FALSE)
     ggplot2::ggtitle(paste0('Cumulative ', index, ' Progress Plot')) +
     ggplot2::xlab('Date') +
     ggplot2::ylab(paste0(index, ' Value')) +
