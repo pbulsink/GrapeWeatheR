@@ -123,22 +123,25 @@ plot_index_history<-function(data, index='Winkler'){
     ggplot2::ylab(paste0(index, ' Value')) +
     #ggplot2::theme_bw() +
     ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'))
-  max_year<-ceiling(max(ggplot2::ggplot_build(p)$layout$panel_ranges[[1]]$x.range))
+  x.range<-ggplot2::ggplot_build(p)$layout$panel_params[[1]]$x.range
   for(i in 1:length(limits)){
     p <- p +
       ggplot2::geom_hline(yintercept = limits[[i]]) +
-      ggplot2::annotation_custom(grob = grid::textGrob(limits_text[[i]],
-                                                       hjust = 0),
-                                 xmin = max_year+1,
-                                 xmax = max_year+1,
-                                 ymin = limits[[i]],
-                                 ymax = limits[[i]])
+      ggplot2::annotate(geom = 'label', label = limits_text[[i]], x = min(x.range), y = limits[[i]])
+      ggplot2::geom_label(limits_text[[i]], show.legend = FALSE)
+      # ggplot2::annotation_custom(grob = grid::textGrob(limits_text[[i]],
+      #                                                  hjust = 0),
+      #                            xmin = max_year+1,
+      #                            xmax = max_year+1,
+      #                            ymin = limits[[i]],
+      #                            ymax = limits[[i]])
   }
 
-  gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
-  gt$layout$clip[gt$layout$name == "panel"] <- "off"
 
-  grid::grid.draw(gt)
+  # gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
+  # gt$layout$clip[gt$layout$name == "panel"] <- "off"
+  #
+  # grid::grid.draw(gt)
 
 }
 
@@ -177,50 +180,43 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
   data<-data[data$year %in% year, ]
   data$jd<-as.numeric(strftime(data$date, format = "%j"))-1
   data$refdate<-as.Date(data$jd, format = '%j', origin = as.Date("2017-01-01"))
+  mindate<-min(data$refdate)
+  data$stn_year <- paste(data$station_id, data$year, sep = ", ")
 
   #Winkler & Huglin use subset of months.
   if(index == 'Winkler'){
     data$month<-as.numeric(data$month)
     data<-data[data$month %in% c(4:10), ]
-    data$index<-GrapeWeatheR:::winkler_day(data)
+    data$index<-winkler_day(data)
   } else if (index == 'Huglin'){
     data$month<-as.numeric(data$month)
     data<-data[data$month %in% c(4:9), ]
-    data$index<-GrapeWeatheR:::huglin_day(data)
+    data$index<-huglin_day(data)
   } else {
-    data$index<-GrapeWeatheR:::bedd_day(data)
+    data$index<-bedd_day(data)
   }
 
-  data$cumulate <- 0
 
-  for (y in year){
-    data[data$year == y, 'cumulate']<-cumsum(data[data$year==y, 'index'])
-  }
+  data <- data %>%
+    dplyr::group_by(year, station_id) %>%
+    dplyr::mutate(cumulate = cumsum(index))
 
   p<-ggplot2::ggplot(data=data,
-                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate))) +
+                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate), colour = quote(stn_year))) +
     ggplot2::geom_line() +
-    gghighlight::gghighlight(max(year), max_highlight = 1L, use_direct_label = FALSE)
+    gghighlight::gghighlight(year == max(year), max_highlight = 1L, use_direct_label = FALSE, use_group_by = FALSE) +
     ggplot2::ggtitle(paste0('Cumulative ', index, ' Progress Plot')) +
     ggplot2::xlab('Date') +
     ggplot2::ylab(paste0(index, ' Value')) +
-    ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'),
-                   legend.position = 'top')
-  max_date<-ceiling(max(ggplot2::ggplot_build(p)$layout$panel_ranges[[1]]$x.range))
+    #ggplot2::theme_bw()
+    ggplot2::theme(legend.position = 'top') +
+    ggplot2::scale_color_discrete(name = 'Station ID, Year')
   for(i in 1:length(limits)){
     p <- p +
       ggplot2::geom_hline(yintercept = limits[[i]]) +
-      ggplot2::annotation_custom(grob = grid::textGrob(limits_text[[i]],
-                                                       hjust = 0),
-                                 xmin = max_date+1,
-                                 xmax = max_date+1,
-                                 ymin = limits[[i]],
-                                 ymax = limits[[i]])
+      ggplot2::annotate(geom = 'label', label = limits_text[[i]], x = min(data$refdate), y = limits[[i]], hjust = 0)
   }
 
-  gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
-  gt$layout$clip[gt$layout$name == "panel"] <- "off"
-
-  grid::grid.draw(gt)
+  p
 
 }
