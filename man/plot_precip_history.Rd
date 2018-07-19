@@ -4,10 +4,14 @@
 \alias{plot_precip_history}
 \title{Plot Precipitation History}
 \usage{
-plot_precip_history(data)
+plot_precip_history(data, interval = "day", trim_years = 5)
 }
 \arguments{
 \item{data}{Data frame from which to plot.}
+
+\item{interval}{Whether to plot `day` or `week` or `month` or `year` amounts}
+
+\item{trim_years}{the number of years of data to plot.}
 }
 \value{
 a ggplot object

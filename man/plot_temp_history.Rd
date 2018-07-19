@@ -2,7 +2,7 @@
 % Please edit documentation in R/reports_and_plots.R
 \name{plot_temp_history}
 \alias{plot_temp_history}
-\title{Plot Annual Temperature History}
+\title{Plot Temperature History}
 \usage{
 plot_temp_history(data, average_n = 1, interval = "day", what = "max",
   trim_years = 5)
@@ -22,5 +22,5 @@ plot_temp_history(data, average_n = 1, interval = "day", what = "max",
 a plot
 }
 \description{
-Plot Annual Temperature History
+Plot Temperature History
 }

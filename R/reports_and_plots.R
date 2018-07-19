@@ -24,7 +24,13 @@ rolling <- function(v, n){
   #return(as.numeric(filter(v,rep(1/n,n), sides=2))) #Doesn't handle NA
 }
 
-#' Plot Annual Temperature History
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+        sep="", collapse=" ")
+}
+
+#' Plot Temperature History
 #'
 #' @param data Data frame from which to plot.
 #' @param average_n The number of items to include in a rolling average
@@ -78,23 +84,58 @@ plot_temp_history<-function(data, average_n=1, interval='day', what = 'max', tri
   p <- ggplot2::ggplot(data = data,
                        ggplot2::aes_(x=quote(date), y = quote(rolling))) +
     ggplot2::geom_line(na.rm=TRUE) +
-    ggplot2::ggtitle(paste0('Temperature (',what,') History')) +
+    ggplot2::ggtitle(paste0(simpleCap(what), ' Temperature History')) +
     ggplot2::xlab('Date') +
-    ggplot2::ylab('Temperature (degrees)') +
+    ggplot2::ylab('Temperature (\u00B0C)') +
     ggplot2::theme_minimal()
   p
 }
 
-
-
 #' Plot Precipitation History
 #'
 #' @param data Data frame from which to plot.
+#' @param interval Whether to plot `day` or `week` or `month` or `year` amounts
+#' @param trim_years the number of years of data to plot.
 #'
 #' @return a ggplot object
 #' @export
-plot_precip_history<-function(data){
+plot_precip_history<-function(data, interval = 'day', trim_years=5){
+  if (!(interval %in% c('day', 'week', 'month', 'year'))){
+    stop("Interval must be one of 'day', 'week', 'month', or 'year'.")
+  }
 
+  if(trim_years > 0){
+    data<-data[data$date > Sys.Date()-trim_years*365.25,]
+  }
+
+  if(interval == 'week'){
+    data$week <- strftime(data$date, format='%V')
+    data <- data %>%
+      dplyr::group_by(!!dplyr::sym('year'), !!dplyr::sym('week')) %>%
+      dplyr::summarise(date = mean(!!dplyr::sym('date'), na.rm = TRUE),
+                       total_precip = sum(!!dplyr::sym('total_precip'), na.rm=TRUE))
+
+  } else if (interval == 'month'){
+    data <- data %>%
+      dplyr::group_by(!!dplyr::sym('year'), !!dplyr::sym('month')) %>%
+      dplyr::summarise(date = mean(!!dplyr::sym('date'), na.rm = TRUE),
+                       total_precip = sum(!!dplyr::sym('total_precip'), na.rm=TRUE))
+  } else if (interval == 'year'){
+    data <- data %>%
+      dplyr::group_by(!!dplyr::sym('year')) %>%
+      dplyr::summarise(date = mean(!!dplyr::sym('date'), na.rm = TRUE),
+                       total_precip = sum(!!dplyr::sym('total_precip'), na.rm=TRUE))
+
+  }
+
+  p <- ggplot2::ggplot(data = data,
+                       ggplot2::aes_(x=quote(date), y = quote(total_precip))) +
+    ggplot2::geom_line(na.rm=TRUE) +
+    ggplot2::ggtitle(paste0('Precipitation History (Total per ', simpleCap(interval), ')')) +
+    ggplot2::xlab('Date') +
+    ggplot2::ylab('Precipitation (mm)') +
+    ggplot2::theme_minimal()
+  p
 }
 
 
