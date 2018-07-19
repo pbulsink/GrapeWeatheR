@@ -4,7 +4,8 @@
 \alias{plot_temp_history}
 \title{Plot Annual Temperature History}
 \usage{
-plot_temp_history(data, average_n = 1, interval = "day", what = "max")
+plot_temp_history(data, average_n = 1, interval = "day", what = "max",
+  trim_years = 5)
 }
 \arguments{
 \item{data}{Data frame from which to plot.}
@@ -14,6 +15,8 @@ plot_temp_history(data, average_n = 1, interval = "day", what = "max")
 \item{interval}{One of 'day', 'week', 'month'}
 
 \item{what}{One of 'max', 'mean', 'min'}
+
+\item{trim_years}{Number of recent years to show. Set 0 for all data.}
 }
 \value{
 a plot

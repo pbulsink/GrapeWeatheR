@@ -2,7 +2,7 @@
 % Please edit documentation in R/reports_and_plots.R
 \name{plot_precip_history}
 \alias{plot_precip_history}
-\title{Title}
+\title{Plot Precipitation History}
 \usage{
 plot_precip_history(data)
 }
@@ -13,5 +13,5 @@ plot_precip_history(data)
 a ggplot object
 }
 \description{
-Title
+Plot Precipitation History
 }

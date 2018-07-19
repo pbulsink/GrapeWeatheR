@@ -54,19 +54,19 @@ plot_temp_history<-function(data, average_n=1, interval='day', what = 'max', tri
   data$week <- strftime(data$date, format='%V')
   if(interval == 'week'){
     data <- data %>%
-      dplyr::group_by(year, week) %>%
-      dplyr::summarise(date = mean(date, na.rm = TRUE),
-                       max_temp = mean(max_temp, na.rm = TRUE),
-                       min_temp = mean(min_temp, na.rm = TRUE),
-                       mean_teamp = mean(mean_temp, na.rm = TRUE))
+      dplyr::group_by(!!dplyr::sym('year'), !!dplyr::sym('week')) %>%
+      dplyr::summarise(date = mean(!!dplyr::sym('date'), na.rm = TRUE),
+                       max_temp = mean(!!dplyr::sym('max_temp'), na.rm = TRUE),
+                       min_temp = mean(!!dplyr::sym('min_temp'), na.rm = TRUE),
+                       mean_temp = mean(!!dplyr::sym('mean_temp'), na.rm = TRUE))
 
   } else if (interval == 'month'){
     data <- data %>%
-      dplyr::group_by(year, month) %>%
-      dplyr::summarise(date = mean(date, na.rm = TRUE),
-                       max_temp = mean(max_temp, na.rm = TRUE),
-                       min_temp = mean(min_temp, na.rm = TRUE),
-                       mean_teamp = mean(mean_temp, na.rm = TRUE))
+      dplyr::group_by(!!dplyr::sym('year'), !!dplyr::sym('month')) %>%
+      dplyr::summarise(date = mean(!!dplyr::sym('date'), na.rm = TRUE),
+                       max_temp = mean(!!dplyr::sym('max_temp'), na.rm = TRUE),
+                       min_temp = mean(!!dplyr::sym('min_temp'), na.rm = TRUE),
+                       mean_temp = mean(!!dplyr::sym('mean_temp'), na.rm = TRUE))
   }
 
   if (average_n > 1){
@@ -77,7 +77,7 @@ plot_temp_history<-function(data, average_n=1, interval='day', what = 'max', tri
 
   p <- ggplot2::ggplot(data = data,
                        ggplot2::aes_(x=quote(date), y = quote(rolling))) +
-    ggplot2::geom_line() +
+    ggplot2::geom_line(na.rm=TRUE) +
     ggplot2::ggtitle(paste0('Temperature (',what,') History')) +
     ggplot2::xlab('Date') +
     ggplot2::ylab('Temperature (degrees)') +
@@ -133,7 +133,7 @@ plot_index_history<-function(data, index='Winkler'){
 
   p <- ggplot2::ggplot(data = annual_data,
                        ggplot2::aes_(x = quote(year), y = quote(index))) +
-    ggplot2::geom_point() +
+    ggplot2::geom_point(na.rm=TRUE) +
     ggplot2::ggtitle(paste0('Annual ', index, ' Values Plot')) +
     ggplot2::xlab('Year') +
     ggplot2::ylab(paste0(index, ' Value')) +
@@ -209,7 +209,7 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
 
   p<-ggplot2::ggplot(data=data,
                      ggplot2::aes_(x=quote(refdate), y=quote(cumulate), colour = quote(stn_year))) +
-    ggplot2::geom_line() +
+    ggplot2::geom_line(na.rm=TRUE) +
     gghighlight::gghighlight(year == max(year), max_highlight = 1L, use_direct_label = FALSE, use_group_by = FALSE) +
     ggplot2::ggtitle(paste0('Cumulative ', index, ' Progress Plot')) +
     ggplot2::xlab('Date') +
