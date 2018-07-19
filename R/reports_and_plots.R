@@ -30,10 +30,11 @@ rolling <- function(v, n){
 #' @param average_n The number of items to include in a rolling average
 #' @param interval One of 'day', 'week', 'month'
 #' @param what One of 'max', 'mean', 'min'
+#' @param trim_years Number of recent years to show. Set 0 for all data.
 #'
 #' @return a plot
 #' @export
-plot_temp_history<-function(data, average_n=1, interval='day', what = 'max'){
+plot_temp_history<-function(data, average_n=1, interval='day', what = 'max', trim_years=5){
   if (!(interval %in% c('day', 'week', 'month'))){
     stop("Interval must be one of 'day', 'week', or 'month'.")
   }
@@ -46,32 +47,47 @@ plot_temp_history<-function(data, average_n=1, interval='day', what = 'max'){
     average_n <- average_n + 1
   }
 
-  data$week <- strftime(data$date, format='%V')
-  if(interval == 'week'){
-    data %>%
-      dplyr::group_by(year, week) %>%
-      dplyr::summarise(max_temp = mean(max_temp),
-                       min_temp = mean(min_temp),
-                       mean_teamp = mean(mean_temp))
-
-  } else if (interval == 'month'){
-    data %>%
-      dplyr::group_by(year, month) %>%
-      dplyr::summarise(max_temp = mean(max_temp),
-                       min_temp = mean(min_temp),
-                       mean_teamp = mean(mean_temp))
+  if(trim_years > 0){
+    data<-data[data$date > Sys.Date()-trim_years*365.25,]
   }
 
-  data$rolling <- rolling(data[,paste0(what,'_temp')], average_n)
+  data$week <- strftime(data$date, format='%V')
+  if(interval == 'week'){
+    data <- data %>%
+      dplyr::group_by(year, week) %>%
+      dplyr::summarise(date = mean(date, na.rm = TRUE),
+                       max_temp = mean(max_temp, na.rm = TRUE),
+                       min_temp = mean(min_temp, na.rm = TRUE),
+                       mean_teamp = mean(mean_temp, na.rm = TRUE))
+
+  } else if (interval == 'month'){
+    data <- data %>%
+      dplyr::group_by(year, month) %>%
+      dplyr::summarise(date = mean(date, na.rm = TRUE),
+                       max_temp = mean(max_temp, na.rm = TRUE),
+                       min_temp = mean(min_temp, na.rm = TRUE),
+                       mean_teamp = mean(mean_temp, na.rm = TRUE))
+  }
+
+  if (average_n > 1){
+    data$rolling <- rolling(data[[paste0(what,'_temp')]], average_n)
+  } else {
+    data$rolling <- data[[paste0(what,'_temp')]]
+  }
 
   p <- ggplot2::ggplot(data = data,
-                       aes_(x=quote(date), y = rolling))
+                       ggplot2::aes_(x=quote(date), y = quote(rolling))) +
+    ggplot2::geom_line() +
+    ggplot2::ggtitle(paste0('Temperature (',what,') History')) +
+    ggplot2::xlab('Date') +
+    ggplot2::ylab('Temperature (degrees)') +
+    ggplot2::theme_minimal()
+  p
 }
 
 
 
-#precip plot
-#' Title
+#' Plot Precipitation History
 #'
 #' @param data Data frame from which to plot.
 #'
@@ -121,7 +137,7 @@ plot_index_history<-function(data, index='Winkler'){
     ggplot2::ggtitle(paste0('Annual ', index, ' Values Plot')) +
     ggplot2::xlab('Year') +
     ggplot2::ylab(paste0(index, ' Value')) +
-    #ggplot2::theme_bw() +
+    ggplot2::theme_minimal() +
     ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'))
   x.range<-ggplot2::ggplot_build(p)$layout$panel_params[[1]]$x.range
   for(i in 1:length(limits)){
@@ -129,19 +145,9 @@ plot_index_history<-function(data, index='Winkler'){
       ggplot2::geom_hline(yintercept = limits[[i]]) +
       ggplot2::annotate(geom = 'label', label = limits_text[[i]], x = min(x.range), y = limits[[i]])
       ggplot2::geom_label(limits_text[[i]], show.legend = FALSE)
-      # ggplot2::annotation_custom(grob = grid::textGrob(limits_text[[i]],
-      #                                                  hjust = 0),
-      #                            xmin = max_year+1,
-      #                            xmax = max_year+1,
-      #                            ymin = limits[[i]],
-      #                            ymax = limits[[i]])
   }
 
-
-  # gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
-  # gt$layout$clip[gt$layout$name == "panel"] <- "off"
-  #
-  # grid::grid.draw(gt)
+  p
 
 }
 
@@ -208,7 +214,7 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
     ggplot2::ggtitle(paste0('Cumulative ', index, ' Progress Plot')) +
     ggplot2::xlab('Date') +
     ggplot2::ylab(paste0(index, ' Value')) +
-    #ggplot2::theme_bw()
+    ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = 'top') +
     ggplot2::scale_color_discrete(name = 'Station ID, Year')
   for(i in 1:length(limits)){
