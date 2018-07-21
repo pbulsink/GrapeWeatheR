@@ -138,6 +138,49 @@ plot_precip_history<-function(data, interval = 'day', trim_years=5){
   p
 }
 
+#' Plot Precipitation Progress
+#'
+#' @param data Data from which to plot
+#' @param year year to plot, optional (NULL to plot all)
+#'
+#' @return a ggplot plot
+#' @export
+plot_precip_progress <- function(data, year=NULL){
+  if(!is.null(year)){
+    yearrange<-unique(data$year)
+    stopifnot(year %in% yearrange)
+    year<-year[year%in%yearrange]
+  } else {
+    year<-unique(data$year)
+  }
+
+  data<-data[data$year %in% year, ]
+  data$jd<-as.numeric(strftime(data$date, format = "%j"))-1
+  data$refdate<-as.Date(data$jd, format = '%j', origin = as.Date("2017-01-01"))
+  data$stn_year <- paste(data$station_id, data$year, sep = ", ")
+
+  #cumsum trips over NA. Substitute 0 so that we can see the rest of the year
+  miss <- is.na(data$total_precip)
+  data$total_precip[miss] <- 0
+
+  data <- data %>%
+    dplyr::group_by(year, station_id) %>%
+    dplyr::mutate(cumulate = cumsum(!!dplyr::sym('total_precip')))
+
+  p<-ggplot2::ggplot(data=data,
+                     ggplot2::aes_(x=quote(refdate), y=quote(cumulate), colour = quote(stn_year))) +
+    ggplot2::geom_line(na.rm=TRUE) +
+    gghighlight::gghighlight(year == max(year), max_highlight = 1L, use_direct_label = FALSE, use_group_by = FALSE) +
+    ggplot2::ggtitle('Cumulative Precipitation Progress Plot') +
+    ggplot2::xlab('Date') +
+    ggplot2::ylab('Precipitation Total (mm)') +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = 'top') +
+    ggplot2::scale_color_discrete(name = 'Station ID, Year')
+
+  p
+}
+
 
 #' Plot the annual index value over time
 #'
@@ -227,7 +270,6 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
   data<-data[data$year %in% year, ]
   data$jd<-as.numeric(strftime(data$date, format = "%j"))-1
   data$refdate<-as.Date(data$jd, format = '%j', origin = as.Date("2017-01-01"))
-  mindate<-min(data$refdate)
   data$stn_year <- paste(data$station_id, data$year, sep = ", ")
 
   #Winkler & Huglin use subset of months.
@@ -242,7 +284,6 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
   } else {
     data$index<-bedd_day(data)
   }
-
 
   data <- data %>%
     dplyr::group_by(year, station_id) %>%
