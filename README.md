@@ -14,7 +14,7 @@ Examples
 We need to have weather data downloaded to analyze. We'll download data from Point Pelee for the last few years:
 
 ``` r
-pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2011-01-01', end = '2017-12-31')
+pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2011-01-01', end = '2018-12-31')
 ```
 
 ### Index Calculation
@@ -44,7 +44,7 @@ annual_pelee
 #> #   P_III <dbl>, P_IV <dbl>, P_V <dbl>, DPL <dbl>
 ```
 
-We can see that the past few years of BEDD indicies have shown the Pelee region to be Temperate, Warm Temperate, Warm Temperate, Temperate, Temperate, Temperate, Temperate.
+We can see that the past few years of BEDD indicies have shown the Pelee region to be `r pi` `r as.vector(annual_pelee[BEDD_region,])`.
 
 ### Plotting
 

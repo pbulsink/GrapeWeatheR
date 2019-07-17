@@ -28,7 +28,7 @@ The goal of GrapeWeatheR is to provide analysis of Environment Canada Climate Da
 We need to have weather data downloaded to analyze. We'll download data from Point Pelee for the last few years:
 
 ```{r download_data}
-pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2011-01-01', end = '2017-12-31')
+pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2011-01-01', end = '2018-12-31')
 ```
 
 ### Index Calculation
@@ -42,11 +42,15 @@ annual_pelee
 We can see that the past few years of BEDD indicies have shown the Pelee region to be `r paste(annual_pelee$BEDD_region, collapse = ', ')`. 
 
 ### Plotting
-We can plot results as well. 
+We can plot some annualized results as well. 
 ```{r plot_annual_indices}
 plot_index_history(pelee_data, index = 'GST')
 ```
 
+Or, we can show the daily progression in degree growing days:
+```{r plot_degree_days}
+plot_index_progress(pelee_data, "Huglin")
+```
 
 ## Citations
 Gladstones, J. 1992. Viticulture and Environment. Winetitles, Adelaide.
