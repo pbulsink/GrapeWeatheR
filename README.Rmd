@@ -1,7 +1,7 @@
 ---
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -28,7 +28,7 @@ The goal of GrapeWeatheR is to provide analysis of Environment Canada Climate Da
 We need to have weather data downloaded to analyze. We'll download data from Point Pelee for the last few years:
 
 ```{r download_data}
-pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2011-01-01', end = '2018-12-31')
+pelee_data<-weathercan::weather_dl(27533, interval = 'day', start = '2010-01-01')
 ```
 
 ### Index Calculation
@@ -36,12 +36,12 @@ With the data at hand, we can calculate a few climatological indecies. Winkler, 
 
 ```{r calculate_annual_indices}
 annual_pelee <- calculate_annual_indicies(pelee_data)
-annual_pelee
+annual_pelee[,c("year", "GST_region", "WI_region", "HI_region", "BEDD_region")]
 ```
 
 We can see that the past few years of BEDD indicies have shown the Pelee region to be `r paste(annual_pelee$BEDD_region, collapse = ', ')`. 
 
-### Plotting
+### Plotting Temperature
 We can plot some annualized results as well. 
 ```{r plot_annual_indices}
 plot_index_history(pelee_data, index = 'GST')
@@ -52,10 +52,25 @@ Or, we can show the daily progression in degree growing days:
 plot_index_progress(pelee_data, "Huglin")
 ```
 
+### Plotting Precipitation
+Precipitation also matters for viticulture. `GrapeWeatheR` can evaluate and plot precipitation metrics as well. We'll use Ottawa data, as Point Pelee has limited precipitation data available. We can plot precipitatoin on a daily, weekly, monthly, or annual basis.
+
+```{r plot_precipitation_history, warning=FALSE, message=FALSE}
+ottawa_data<-weathercan::weather_dl(49568, start = '2010-01-01', interval = 'day')
+
+plot_precip_history(ottawa_data, interval = 'month', trim_years = 10)
+```
+
+As with the indecies, you can also plot 'progression' of precipitation accumilation for a region.
+
+```{r plot_precipitation_progress}
+plot_precip_progress(ottawa_data)
+```
+
 ## Citations
-Gladstones, J. 1992. Viticulture and Environment. Winetitles, Adelaide.
-Huglin, P. 1978. Nouveau Mode d'Evaluation des Possibilites Heliothermiques d'un Milieu Viticole. C.R. Acad. Agr. France 64:1117-1126
-Ramos, M.C., Jones, G.V., and Martinez-Casasnovas, J.A. 2008. Clim Res 38:1-15
-Want, T., Hamann, A., Spittlehouse, D.L., and Carrol, C. 2016. Locally downscaled and spatially customizable climate data for historical and future periods for North America. PLoS One 11: e015672
-Winkler, A.J., J.A. Cook, W.M. Kliewer, and L.A. Lider. 1974. General Viticulture. 4th ed. University of California Press, Berkeley.
+- Gladstones, J. 1992. Viticulture and Environment. Winetitles, Adelaide.
+- Huglin, P. 1978. Nouveau Mode d'Evaluation des Possibilites Heliothermiques d'un Milieu Viticole. C.R. Acad. Agr. France 64:1117-1126
+- Ramos, M.C., Jones, G.V., and Martinez-Casasnovas, J.A. 2008. Clim Res 38:1-15
+- Want, T., Hamann, A., Spittlehouse, D.L., and Carrol, C. 2016. Locally downscaled and spatially customizable climate data for historical and future periods for North America. PLoS One 11: e015672
+- Winkler, A.J., J.A. Cook, W.M. Kliewer, and L.A. Lider. 1974. General Viticulture. 4th ed. University of California Press, Berkeley.
  

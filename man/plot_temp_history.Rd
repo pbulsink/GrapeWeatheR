@@ -4,8 +4,8 @@
 \alias{plot_temp_history}
 \title{Plot Temperature History}
 \usage{
-plot_temp_history(data, average_n = 1, interval = "day", what = "max",
-  trim_years = 5)
+plot_temp_history(data, average_n = 1, interval = "day",
+  what = "max", trim_years = 5)
 }
 \arguments{
 \item{data}{Data frame from which to plot.}

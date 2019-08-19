@@ -12,8 +12,9 @@ Imports:
     dplyr,
     stats,
     ggplot2,
-    gghighlight
-RoxygenNote: 6.0.1
+    gghighlight,
+    scales
+RoxygenNote: 6.1.1
 Suggests:
   testthat
 Remotes:

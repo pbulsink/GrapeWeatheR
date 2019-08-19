@@ -176,7 +176,8 @@ plot_precip_progress <- function(data, year=NULL){
     ggplot2::ylab('Precipitation Total (mm)') +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = 'top') +
-    ggplot2::scale_color_discrete(name = 'Station ID, Year')
+    ggplot2::scale_color_discrete(name = 'Station ID, Year') +
+    ggplot2::scale_x_date(date_breaks = '1 month', date_labels = "%b", date_minor_breaks = '1 month')
 
   p
 }
@@ -222,13 +223,14 @@ plot_index_history<-function(data, index='Winkler'){
     ggplot2::xlab('Year') +
     ggplot2::ylab(paste0(index, ' Value')) +
     ggplot2::theme_minimal() +
-    ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt'))
+    ggplot2::theme(plot.margin = ggplot2::margin(10,100,10,10, unit = 'pt')) +
+    ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = nrow(annual_data)))
+
   x.range<-ggplot2::ggplot_build(p)$layout$panel_params[[1]]$x.range
   for(i in 1:length(limits)){
     p <- p +
       ggplot2::geom_hline(yintercept = limits[[i]]) +
-      ggplot2::annotate(geom = 'label', label = limits_text[[i]], x = min(x.range), y = limits[[i]])
-      ggplot2::geom_label(limits_text[[i]], show.legend = FALSE)
+      ggplot2::annotate(geom = 'label', label = limits_text[[i]], x = min(x.range), y = limits[[i]], hjust = 0)
   }
 
   p
@@ -298,7 +300,9 @@ plot_index_progress<-function(data, index='Winkler', year=NULL){
     ggplot2::ylab(paste0(index, ' Value')) +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = 'top') +
-    ggplot2::scale_color_discrete(name = 'Station ID, Year')
+    ggplot2::scale_color_discrete(name = 'Station ID, Year') +
+    ggplot2::scale_x_date(date_breaks = '1 month', date_labels = "%b")
+
   for(i in 1:length(limits)){
     p <- p +
       ggplot2::geom_hline(yintercept = limits[[i]]) +
